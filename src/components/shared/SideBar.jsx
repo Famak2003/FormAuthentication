@@ -1,10 +1,15 @@
-import { data } from "../../App";
+const data = [
+  { step: 1, info: "YOUR INFO" },
+  { step: 2, info: "SELECT PLAN" },
+  { step: 3, info: "ADD-ONS" },
+  { step: 4, info: "SUMMARY" },
+];
 
 // ------- Sidebar ----------
 
 export default function SideBar({ order, onSetOrder }) {
   return (
-    <section className=" text-xs px-[2rem] py-[2rem] rounded-xl desktop_side_bg h-[100%]">
+    <section className=" text-xs px-[2rem] py-[2rem] rounded-xl ring-1 ring-black desktop_side_bg h-[100%]">
       <ul className=" flex flex-col gap-[1.5rem]  ">
         {data.map((item, id) => (
           <Information

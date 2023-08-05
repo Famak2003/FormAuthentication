@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Button from "../shared/Button";
 import Header from "./../shared/Header";
 
@@ -12,6 +13,9 @@ const data = [
 ];
 
 export default function AddonContent({ handleNextClick, handlePreviousClick }) {
+  const [service, setService] = useState([]);
+  // const service = [];
+
   return (
     <section className=" text-sm flex flex-col gap-[2rem] pt-[2rem] pr-[5rem] h-[100%] w-[100%] ">
       <Header
@@ -26,6 +30,8 @@ export default function AddonContent({ handleNextClick, handlePreviousClick }) {
               info={item.info}
               price={item.price}
               key={item.title}
+              setService={setService}
+              service={service}
             />
           ))}
         </ul>
@@ -39,14 +45,34 @@ export default function AddonContent({ handleNextClick, handlePreviousClick }) {
 }
 
 function Addons(props) {
-  const { title, info, price } = props;
+  const { title, info, price, service, setService } = props;
+  const [checked, setChecked] = useState(false);
+
+  function addService() {
+    const serviceList = { title: title, price: price };
+
+    setChecked(!checked);
+    if (checked) {
+      if (service.includes(serviceList)) return;
+      setService([...service, serviceList]);
+    }
+    if (!checked) {
+      setService(service.filter((serv) => serv.title === title));
+    }
+    console.log(service);
+  }
+
   return (
-    <li className=" w-[100%] rounded-lg ring-1 ring-gray-500 active:ring-purple-800 flex justify-between items-center h-[4rem] px-[1.2rem]  ">
+    <li
+      onClick={addService}
+      className=" w-[100%] rounded-lg ring-1 ring-gray-500 active:ring-purple-800 flex justify-between items-center h-[4rem] px-[1.2rem]  "
+    >
       <div className=" flex gap-[1rem]">
         <input
           className=" accent-blue-500 "
           type="checkbox"
-          //   onClick={(e) => console.log(e.target.value)}
+          checked={checked}
+          onChange={addService}
         />
         <div>
           <h3 className=" font-bold">{title}</h3>

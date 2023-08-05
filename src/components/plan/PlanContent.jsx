@@ -4,20 +4,69 @@ import pro from "./../../assets/images/icon-pro.svg";
 
 import Button from "./../shared/Button";
 import Header from "./../shared/Header";
+import { useEffect, useState } from "react";
+import Switch from "../Switch/Switch";
 
+// images
 const images = [{ arcade }, { advanced }, { pro }];
 
-const data = [
-  { name: "Arcade", price: "90/yr", bonus: "2 months free" },
+// Page content
+const yearlyData = [
+  { name: "Arcade", price: "90", bonus: "2 months free" },
   {
     name: "Advanced",
-    price: "120/yr",
+    price: "120",
     bonus: "2 months free",
   },
-  { name: "Pro", price: "150/yr", bonus: "2 months free" },
+  { name: "Pro", price: "150", bonus: "2 months free" },
 ];
 
-export default function PlanContent({ handleNextClick, handlePreviousClick }) {
+const monthlyData = [
+  { name: "Arcade", price: "9" },
+  {
+    name: "Advanced",
+    price: "12",
+  },
+  { name: "Pro", price: "15" },
+];
+
+export default function PlanContent({
+  handleNextClick,
+  handlePreviousClick,
+  setUserData,
+  userData,
+}) {
+  // const [planOfChoice, setPlanOfChoice] = useState("");
+
+  const [data, setData] = useState(monthlyData);
+  const [getToggle, setGetToggle] = useState(false);
+  const [selectedPlanCard, setSelectedPlanCard] = useState(null);
+
+  useEffect(() => {
+    if (getToggle) {
+      setData(yearlyData);
+    } else {
+      setData(monthlyData);
+    }
+  }, [getToggle]);
+
+  useEffect(() => {
+    setUserData((prev) => {
+      return {
+        ...prev,
+        plan: `${data[selectedPlanCard]?.name || ""}-${
+          data[selectedPlanCard]?.price || ""
+        }/${
+          selectedPlanCard === 0 || selectedPlanCard
+            ? getToggle
+              ? "yr"
+              : "mo"
+            : ""
+        }`,
+      };
+    });
+  }, [selectedPlanCard, data, getToggle, setUserData]);
+
   return (
     <section className=" text-sm flex flex-col gap-[2rem] pt-[2rem] pr-[5rem] h-[100%] w-[100%]  ">
       <Header
@@ -32,13 +81,16 @@ export default function PlanContent({ handleNextClick, handlePreviousClick }) {
               key={item.name}
               name={item.name}
               price={item.price}
-              bonus={item.bonus}
+              bonus={item.bonus || ""}
+              duration={getToggle ? "yr" : "mo"}
+              selectedPlanCard={selectedPlanCard}
+              setSelectedPlanCard={setSelectedPlanCard}
             />
           ))}
         </ul>
-        <div className=" flex gap-[1rem] bg-gray-200 py-[.4rem] rounded-lg justify-center w-[100%]">
+        <div className=" flex gap-[1rem] items-center bg-gray-200 py-[.4rem] rounded-lg justify-center w-[100%]">
           <p>Monthly</p>
-          <input type="checkbox" className=" w-[1rem] accent-purple-600" />
+          <Switch setGetToggle={setGetToggle} />
           <p className="dark_Marine_text">Yearly</p>
         </div>
       </main>
@@ -50,9 +102,17 @@ export default function PlanContent({ handleNextClick, handlePreviousClick }) {
   );
 }
 
-// The plan card
+// Plan card
 function PlanCard(props) {
-  const { num, name, price, bonus } = props;
+  const {
+    num,
+    name,
+    price,
+    bonus,
+    duration,
+    selectedPlanCard,
+    setSelectedPlanCard,
+  } = props;
 
   // Mapping the correct image with their 'num' or id
   const imageSelector = (imgs) => {
@@ -61,12 +121,21 @@ function PlanCard(props) {
   const image = Object.values(imageSelector(images));
 
   return (
-    <li className=" flex flex-col gap-[20%] h-[10rem] px-[.7rem] py-[1rem] w-[32%]  rounded-lg ring-1 ring-gray-500 active:ring-purple-800">
+    <li
+      onClick={() => setSelectedPlanCard(num)}
+      className={`Ball flex flex-col gap-[2rem] h-fit px-[.7rem] py-[1rem] w-[32%] rounded-lg ${
+        selectedPlanCard === num
+          ? "ring-1 ring-purple-600 bg-purple-100"
+          : "ring-1 ring-gray-300 bg-white"
+      }`}
+    >
       <img className=" w-[2.5rem]" src={image} alt={name} />
       <div>
         <h2>{name}</h2>
-        <p>{price}</p>
-        <small>{bonus}</small>
+        <p>
+          {price}/{duration}
+        </p>
+        {bonus && <small>{bonus}</small>}
       </div>
     </li>
   );
