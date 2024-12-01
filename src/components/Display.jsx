@@ -12,6 +12,7 @@ export default function Display() {
     JSON.parse(localStorage.getItem("myData")) || {
       username: "",
       email: "",
+
       phone: "",
       plan: "",
       addOn: [],
